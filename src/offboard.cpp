@@ -90,24 +90,7 @@ int main(int argc, char **argv) {
     //     "mavros/setpoint_velocity/cmd_vel_unstamped", 10);
     auto local_pos_pub = node->create_publisher<geometry_msgs::msg::PoseStamped>(
         "mavros/setpoint_position/local", 10);
-    // auto local_pos_pub = node->create_publisher<mavros_msgs::msg::GlobalPositionTarget>(
-    //     "mavros/setpoint_position/global", 10);
-
-
-    // mavros_msgs::msg::GlobalPositionTarget goal_position;
-
-    // goal_position.latitude = 30.319576;
-    // goal_position.longitude = 120.334665;
-    // goal_position.altitude = 20;
-    // goal_position.header.frame_id = "map";
-    // while (rclcpp::ok()){
-    //     goal_position.header.stamp = node->now();
-
-    //     RCLCPP_INFO(node->get_logger(), "Pub goal_position: la=%lf,lo=%lf,al=%lf",goal_position.latitude,goal_position.longitude,goal_position.altitude);
-    //     local_pos_pub->publish(goal_position);
-    //     rclcpp::spin_some(node);
-    //     rate.sleep();
-    // }
+    
     auto time_start = node->now();
 
     geometry_msgs::msg::PoseStamped pose;
