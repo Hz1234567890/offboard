@@ -1,43 +1,58 @@
-#include <iostream>  
-#include <string>  
+#include "OffboardControl.hpp"
 
-#include <mavros_msgs/srv/set_mode.hpp>
-#include <mavros_msgs/msg/state.hpp>
-
+// // 无人机状态回调函数
+// void OffboardControl::state_callback(const mavros_msgs::msg::State::SharedPtr msg) {
+//     current_state = *msg;
+// }
 
 //初始化运动节点
-void OffboardControl::init(int argc, char **argv){
+void OffboardControl::init(){
     //创建一个Rate对象，设置为每秒20次循环
-    rclcpp::Rate rate(20);
+    rclcpp::Rate rate(10);
 
-    RCLCPP_INFO(node->get_logger(), "Initializing...");
-    while (rclcpp::ok() && !current_state.connected) {
-        rclcpp::spin_some(node);
-        rate.sleep();
-    }
-    RCLCPP_INFO(node->get_logger(), "Connected.");
-
+    RCLCPP_INFO(this->get_logger(), "Initializing...");
     // 设置无人机模式为GUIDED
-    auto cl = node->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
+    auto cl = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
     auto srv_set_mode = std::make_shared<mavros_msgs::srv::SetMode::Request>();
     srv_set_mode->base_mode = 0;
     srv_set_mode->custom_mode = "GUIDED";
 
+    rclcpp::sleep_for(std::chrono::seconds(1));
+    RCLCPP_INFO(this->get_logger(), "SetMode Command send");
     auto result = cl->async_send_request(srv_set_mode);
-    if (rclcpp::spin_until_future_complete(node, result) ==
-        rclcpp::FutureReturnCode::SUCCESS)
-    {
-        RCLCPP_INFO(node->get_logger(), "SetMode send ok");
-    } else {
-        RCLCPP_ERROR(node->get_logger(), "Failed SetMode");
-        return -1;
-    }
+    // auto result_future = cl->async_send_request(srv_set_mode,
+    //     [this](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
+	// 		auto status = future.wait_for(std::chrono::seconds(1));
+	// 		if (status == std::future_status::ready) {
+	// 			auto reply = future.get()->mode_sent;
+	// 			RCLCPP_INFO(this->get_logger(), "Mode switch: %s", reply ? "success" : "failed");
+	// 		} 
+    //         else {
+	// 			// Wait for the result.
+	// 			RCLCPP_INFO(this->get_logger(), "Service In-Progress...");
+	// 		}
+    //         RCLCPP_INFO(this->get_logger(), "SetEnd");
+	// 	});
+    // 在节点中使用 spin_until_future_complete 等待 future 完成
+    rclcpp::spin_until_future_complete(this->get_node_base_interface(), result);
 
+    // 处理异步操作完成后的逻辑
+    if (result.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+        auto response = result.get();
+        if (response->mode_sent) {
+            RCLCPP_INFO(get_logger(), "GUIEDE mode set successfully");
+        } else {
+            RCLCPP_ERROR(get_logger(), "Failed to set GUIDED mode");
+        }
+    } else {
+        RCLCPP_ERROR(get_logger(), "Service call timed out");
+    }
+    
     //按下回车键以解锁无人机
     
     std::string key;  
     while (true) {  
-        RCLCPP_INFO(node->get_logger(), "解锁前所有准备已完成，按下回车解锁无人机");
+        RCLCPP_INFO(this->get_logger(), "解锁前所有准备已完成，按下回车解锁无人机");
         // 读取一整行输入  
         std::getline(std::cin, key);  
 
@@ -48,18 +63,20 @@ void OffboardControl::init(int argc, char **argv){
     }  
 
     // 解锁无人机
-    auto arming_cl = node->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
+    auto arming_cl = this->create_client<mavros_msgs::srv::CommandBool>("/mavros/cmd/arming");
     auto srv_arm = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
     srv_arm->value = true;
 
-    auto arm_result = arming_cl->async_send_request(srv_arm);
-    if (rclcpp::spin_until_future_complete(node, arm_result) ==
-        rclcpp::FutureReturnCode::SUCCESS)
-    {
-        RCLCPP_INFO(node->get_logger(), "ARM send ok");
-    } else {
-        RCLCPP_ERROR(node->get_logger(), "Failed arming");
-    }
-  
+    auto arm_result = arming_cl->async_send_request(srv_arm,
+        [this](rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedFuture future) {
+			auto status = future.wait_for(std::chrono::seconds(1));
+			if (status == std::future_status::ready) {
+				auto reply = future.get()->success;
+				RCLCPP_INFO(this->get_logger(), "Arm motors: %s", reply ? "success" : "failed");
+			} else {
+				// Wait for the result.
+				RCLCPP_INFO(this->get_logger(), "Service In-Progress...");
+			}
+		});
 
 }
