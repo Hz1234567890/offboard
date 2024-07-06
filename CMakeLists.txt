@@ -24,7 +24,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-add_executable(offboard src/offboard.cpp)
+add_executable(offboard src/init.cpp src/main.cpp src/main.hpp src/speed.cpp src/takeoff.cpp)
 
 ament_target_dependencies(offboard rclcpp geometry_msgs mavros_msgs)
 

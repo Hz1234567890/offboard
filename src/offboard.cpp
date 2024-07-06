@@ -65,10 +65,6 @@ int main(int argc, char **argv) {
     auto takeoff_cl = node->create_client<mavros_msgs::srv::CommandTOL>("/mavros/cmd/takeoff");
     auto srv_takeoff = std::make_shared<mavros_msgs::srv::CommandTOL::Request>();
     srv_takeoff->altitude = 5;
-    // srv_takeoff->latitude = 30.319576;
-    // srv_takeoff->longitude = 120.334665;
-    //atitude: 30.3194892
-/////////////////////////////////////////////////////////////.longitude: 120.3353836
 
     
     srv_takeoff->min_pitch = 0;
