@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
         RCLCPP_ERROR(node->get_logger(), "Failed arming");
     }
 
-    // 发布起飞的指令，向上飞行10米
+    // 发布起飞的指令，向上飞行5米
     auto takeoff_cl = node->create_client<mavros_msgs::srv::CommandTOL>("/mavros/cmd/takeoff");
     auto srv_takeoff = std::make_shared<mavros_msgs::srv::CommandTOL::Request>();
     srv_takeoff->altitude = 5;
