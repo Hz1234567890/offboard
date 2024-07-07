@@ -1,6 +1,6 @@
 #include "OffboardControl.hpp"
 
-const double headingangle_compass=185.0;
+const double headingangle_compass=180.0;
 
 OffboardControl::OffboardControl()
 :Node("OffboardControl")
@@ -30,7 +30,7 @@ void OffboardControl::run(){
     double radians_angle_90 = (angle-90) * PI /180.0;
     double x=dy*cos(radians_angle)+dx*cos(radians_angle_90);
     double y=dy*sin(radians_angle)+dx*sin(radians_angle_90);
-    RCLCPP_INFO(node->get_logger(), "x: %lf   y: %lf", x, y);
+    RCLCPP_INFO(this->get_logger(), "x: %lf   y: %lf", x, y);
     send_local_setpoint_command(x,y,2,angle);
     // rclcpp::sleep_for(std::chrono::seconds(10));
     // send_velocity_command(2,0,0);
