@@ -1,5 +1,7 @@
 #include "OffboardControl.hpp"
 
+const double headingangle_compass=185.0;
+
 OffboardControl::OffboardControl()
 :Node("OffboardControl")
 {
@@ -19,8 +21,18 @@ void OffboardControl::run(){
     init();
     RCLCPP_INFO(this->get_logger(), "结束init函数");
     takeoff(3);//起飞高度3米    
-    send_local_setpoint_command(5,10,2,90);
-    send_velocity_command(2,0,0);
+    double dx = 0.0, dy = 30.0;
+    double angle = 450.0 - headingangle_compass;
+    if (angle>360.0){
+        angle=angle-360.0;
+    }  
+    double radians_angle = angle * PI / 180.0;
+    double radians_angle_90 = (angle-90) * PI /180.0;
+    double x=dy*cos(radians_angle)+dx*cos(radians_angle_90);
+    double y=dy*sin(radians_angle)+dx*sin(radians_angle_90);
+    send_local_setpoint_command(x,y,2,angle);
+    // rclcpp::sleep_for(std::chrono::seconds(10));
+    // send_velocity_command(2,0,0);
 }
 
 void OffboardControl::state_callback(const mavros_msgs::msg::State::SharedPtr msg)

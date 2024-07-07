@@ -10,6 +10,8 @@ void OffboardControl::init(){
     //创建一个Rate对象，设置为每秒20次循环
     rclcpp::Rate rate(10);
 
+    //重新设置家地址
+
     RCLCPP_INFO(this->get_logger(), "Initializing...");
     // 设置无人机模式为GUIDED
     auto cl = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");

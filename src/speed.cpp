@@ -33,6 +33,7 @@ void OffboardControl::send_local_setpoint_command(double x, double y, double z,d
     msg.pose.position.y = y;
     msg.pose.position.z = z;
     //旋转四元数
+    
     double radians_angle = angle * PI / 180.0;
     msg.pose.orientation.x = 0;
 	msg.pose.orientation.y = 0;

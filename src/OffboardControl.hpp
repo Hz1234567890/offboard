@@ -10,6 +10,7 @@
 #include <mavros_msgs/srv/set_mode.hpp>
 #include <mavros_msgs/msg/state.hpp>
 #include "mavros_msgs/msg/global_position_target.hpp"
+#include <cmath>
 #define PI 3.14159
 
 
