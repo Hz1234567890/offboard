@@ -11,6 +11,8 @@ void OffboardControl::init(){
     rclcpp::Rate rate(10);
 
     //重新设置家地址
+    set_home_position();
+
 
     RCLCPP_INFO(this->get_logger(), "Initializing...");
     // 设置无人机模式为GUIDED
@@ -31,36 +33,6 @@ void OffboardControl::init(){
     } else {
         RCLCPP_ERROR(get_logger(), "Failed to set GUIDED mode");
     }
-    // auto result_future = cl->async_send_request(srv_set_mode,
-    //     [this](rclcpp::Client<mavros_msgs::srv::SetMode>::SharedFuture future) {
-	// 		auto status = future.wait_for(std::chrono::seconds(1));
-	// 		if (status == std::future_status::ready) {
-	// 			auto reply = future.get()->mode_sent;
-	// 			RCLCPP_INFO(this->get_logger(), "Mode switch: %s", reply ? "success" : "failed");
-	// 		} 
-    //         else {
-	// 			// Wait for the result.
-	// 			RCLCPP_INFO(this->get_logger(), "Service In-Progress...");
-	// 		}
-    //         RCLCPP_INFO(this->get_logger(), "SetEnd");
-	// 	});
-
-    // // 在节点中使用 spin_until_future_complete 等待 future 完成
-    // rclcpp::spin_until_future_complete(this->get_node_base_interface(), result);
-
-    // // 处理异步操作完成后的逻辑
-    // if (result.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-    //     auto response = result.get();
-    //     if (response->mode_sent) {
-    //         RCLCPP_INFO(get_logger(), "GUIEDE mode set successfully");
-    //     } else {
-    //         RCLCPP_ERROR(get_logger(), "Failed to set GUIDED mode");
-    //     }
-    // } else {
-    //     RCLCPP_ERROR(get_logger(), "Service call timed out");
-    // }
-    
-    //按下回车键以解锁无人机
     
     std::string key;  
     while (true) {  
@@ -98,16 +70,34 @@ void OffboardControl::init(){
     } else {
         RCLCPP_ERROR(this->get_logger(), "Arm Failed");
     }
-    // auto arm_result = arming_cl->async_send_request(srv_arm,
-    //     [this](rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedFuture future) {
-	// 		auto status = future.wait_for(std::chrono::seconds(1));
-	// 		if (status == std::future_status::ready) {
-	// 			auto reply = future.get()->success;
-	// 			RCLCPP_INFO(this->get_logger(), "Arm motors: %s", reply ? "success" : "failed");
-	// 		} else {
-	// 			// Wait for the result.
-	// 			RCLCPP_INFO(this->get_logger(), "Service In-Progress...");
-	// 		}
-	// 	});
 
     }
+
+
+// 设置无人机家的位置
+// /mavros/cmd/set_home [mavros_msgs/srv/CommandHome]
+void OffboardControl::set_home_position()
+{
+    rclcpp::Client<mavros_msgs::srv::CommandHome>::SharedPtr set_home_client_;
+    set_home_client_ = this->create_client<mavros_msgs::srv::CommandHome>("mavros/cmd/set_home");
+	auto srv_home = std::make_shared<mavros_msgs::srv::CommandHome::Request>();
+	srv_home->current_gps = true;
+
+	while (!set_home_client_->wait_for_service(std::chrono::seconds(1))) {
+		if (!rclcpp::ok()) {
+			RCLCPP_ERROR(this->get_logger(), "Interrupted while waiting for the service. Exiting.");
+			return;
+		}
+		RCLCPP_INFO(this->get_logger(), "service not available, waiting again...");
+	}
+	RCLCPP_INFO(this->get_logger(), "set home command send");
+	auto home_result = set_home_client_->async_send_request(srv_home);
+
+    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), home_result) ==
+        rclcpp::FutureReturnCode::SUCCESS)
+    {
+        RCLCPP_INFO(this->get_logger(), "Set Home success");
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Set Home Failed");
+    }
+}
