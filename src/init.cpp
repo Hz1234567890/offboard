@@ -16,24 +16,25 @@ void OffboardControl::init(){
 
     RCLCPP_INFO(this->get_logger(), "Initializing...");
     // 设置无人机模式为GUIDED
-    auto cl = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
-    auto srv_set_mode = std::make_shared<mavros_msgs::srv::SetMode::Request>();
-    srv_set_mode->base_mode = 0;
-    srv_set_mode->custom_mode = "GUIDED";
+    // auto cl = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
+    // auto srv_set_mode = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+    // srv_set_mode->base_mode = 0;
+    // srv_set_mode->custom_mode = "GUIDED";
 
-    rclcpp::sleep_for(std::chrono::seconds(1));
-    RCLCPP_INFO(this->get_logger(), "SetMode Command send");
-    auto result = cl->async_send_request(srv_set_mode);
+    // rclcpp::sleep_for(std::chrono::seconds(1));
+    // RCLCPP_INFO(this->get_logger(), "SetMode Command send");
+    // auto result = cl->async_send_request(srv_set_mode);
 
-    // Wait for the result.
-    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result) ==
-        rclcpp::FutureReturnCode::SUCCESS)
-    {
-        RCLCPP_INFO(get_logger(), "GUIEDE mode set successfully");
-    } else {
-        RCLCPP_ERROR(get_logger(), "Failed to set GUIDED mode");
-    }
-    
+    // // Wait for the result.
+    // if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result) ==
+    //     rclcpp::FutureReturnCode::SUCCESS)
+    // {
+    //     RCLCPP_INFO(get_logger(), "GUIEDE mode set successfully");
+    // } else {
+    //     RCLCPP_ERROR(get_logger(), "Failed to set GUIDED mode");
+    // }
+    set_mode("GUIDED");
+
     std::string key;  
     while (true) {  
         RCLCPP_INFO(this->get_logger(), "解锁前所有准备已完成，按下回车解锁无人机");
@@ -72,6 +73,28 @@ void OffboardControl::init(){
     }
 
     }
+
+//setMode
+void OffboardControl::set_mode(const std::string &mymode){
+    auto cl = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
+    auto srv_set_mode = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+    srv_set_mode->base_mode = 0;
+    srv_set_mode->custom_mode = mymode;
+
+    rclcpp::sleep_for(std::chrono::seconds(1));
+    RCLCPP_INFO(this->get_logger(), "SetMode Command send");
+    auto result = cl->async_send_request(srv_set_mode);
+
+    // Wait for the result.
+    if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), result) ==
+        rclcpp::FutureReturnCode::SUCCESS)
+    {
+        RCLCPP_INFO(get_logger(), mymode.c_str(),"mode set successfully");
+    } else {
+        RCLCPP_ERROR(get_logger(), "Failed to set",mymode.c_str()," mode");
+    }
+}
+
 
 
 // 设置无人机家的位置

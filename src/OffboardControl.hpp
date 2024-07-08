@@ -37,6 +37,8 @@ public:
     void run();
     // void timer_callback(void);
     
+    //设置模式函数
+    void set_mode(const std::string &mymode);
     //设置家地址
     void set_home_position();
 
