@@ -15,6 +15,8 @@ OffboardControl::OffboardControl()
     // timer_ = this->create_wall_timer(
     //     std::chrono::seconds(1),
     //     std::bind(&OffboardControl::timer_callback, this));
+    servo_client_ = this->create_client<mavros_msgs::srv::CommandLong>("mavros/cmd/command");
+    
 }
 
 void OffboardControl::run()
@@ -39,11 +41,14 @@ void OffboardControl::run()
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
     rclcpp::sleep_for(std::chrono::seconds(10));
     surround_shot(dx_shot,dy_shot,shot_length,shot_width);
+    RCLCPP_INFO(this->get_logger(), "3s后投弹");
     rclcpp::sleep_for(std::chrono::seconds(3));
+    servo_controller(12,1050);
     /**
      * 这里需要加入PID的函数
     */
-
+    RCLCPP_INFO(this->get_logger(), "投弹完成，3s后前往侦查区域");
+    rclcpp::sleep_for(std::chrono::seconds(3));
     RCLCPP_INFO(this->get_logger(), "开始前往侦查起点");   
     send_local_setpoint_command(x_see,y_see,see_halt,angle);
     rclcpp::sleep_for(std::chrono::seconds(8));

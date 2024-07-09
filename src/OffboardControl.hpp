@@ -12,6 +12,8 @@
 #include "mavros_msgs/msg/global_position_target.hpp"
 #include <mavros_msgs/srv/command_home.hpp>
 #include <mavros_msgs/msg/home_position.hpp>
+#include <mavros_msgs/srv/command_long.hpp>
+#include <mavros_msgs/msg/command_code.hpp>
 #include <cmath>
 
 #define PI 3.14159265358979323846
@@ -39,8 +41,13 @@ public:
     
     //设置模式函数
     void set_mode(const std::string &mymode);
+    //油门锁解锁函数
+    void arm();
     //设置家地址
     void set_home_position();
+
+    //舵机控制函数
+    void servo_controller(int servo_number, float position);
 
     //环绕投弹区
     void surround_shot(double x,double y,double length,double width);
@@ -62,13 +69,14 @@ private:
     const double see_length = 7.0;
     const double see_width = 5.0;
     const double see_halt = 4.0;
+    const int servo_number = 12;
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr local_pos_pub;
     rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr twist_stamped_publisher;
     rclcpp::Subscription<mavros_msgs::msg::HomePosition>::SharedPtr home_position_subscription_;
-	
+	rclcpp::Client<mavros_msgs::srv::CommandLong>::SharedPtr servo_client_;
     
     void state_callback(const mavros_msgs::msg::State::SharedPtr msg);
     void home_position_callback(const mavros_msgs::msg::HomePosition::SharedPtr msg);
