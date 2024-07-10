@@ -1,6 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include <mavros_msgs/srv/command_bool.hpp>
 #include <mavros_msgs/srv/command_tol.hpp>
 #include <mavros_msgs/srv/set_mode.hpp>
@@ -82,10 +83,8 @@ int main(int argc, char **argv) {
     // 等待10秒
     rclcpp::sleep_for(std::chrono::seconds(10));
 
-    // auto local_vel_pub = node->create_publisher<geometry_msgs::msg::Twist>(
-    //     "mavros/setpoint_velocity/cmd_vel_unstamped", 10);
-    auto local_pos_pub = node->create_publisher<geometry_msgs::msg::PoseStamped>(
-        "mavros/setpoint_position/local", 10);
+    auto local_vel_pub = node->create_publisher<geometry_msgs::msg::TwistStamped>("/mavros/setpoint_velocity/cmd_vel", 5);
+    auto local_pos_pub = node->create_publisher<geometry_msgs::msg::PoseStamped>("mavros/setpoint_position/local", 10);
     
     auto time_start = node->now();
 
@@ -93,7 +92,7 @@ int main(int argc, char **argv) {
     pose.header.frame_id = "map";
     pose.pose.position.z = 2;
 
-    geometry_msgs::msg::Twist vel;
+    geometry_msgs::msg::TwistStamped vel;
 
     // 转圈圈飞行
     while (rclcpp::ok()) {
@@ -109,15 +108,15 @@ int main(int argc, char **argv) {
         }
         
 
-        // vel.linear.x = -1;
-        // vel.linear.y = 0;
+        vel.twist.linear.x = 5;
+        vel.twist.linear.y = 5;
+        vel.twist.linear.z = 5;
 
-
-        local_pos_pub->publish(pose);
-        RCLCPP_INFO(node->get_logger(), "Pub pose: x=%d,y=%d",pose.pose.position.x,pose.pose.position.y);
+        // local_pos_pub->publish(pose);
+        // RCLCPP_INFO(node->get_logger(), "Pub pose: x=%d,y=%d",pose.pose.position.x,pose.pose.position.y);
         // rclcpp::sleep_for(std::chrono::seconds(10)); // 暂停1秒
-        // local_vel_pub->publish(vel);
-        // RCLCPP_INFO(node->get_logger(), "Pub vel");
+        local_vel_pub->publish(vel);
+        RCLCPP_INFO(node->get_logger(), "Pub vel");
 
         rclcpp::spin_some(node);
         rate.sleep();

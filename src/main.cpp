@@ -6,8 +6,13 @@
 //     current_state = *msg;
 // }
 int main(int argc, char **argv) {
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<OffboardControl>();
+
+    rclcpp::executors::MultiThreadedExecutor executor;
+
+    auto yolo=std::make_shared<YOLO>();
+    auto node = std::make_shared<OffboardControl>(yolo);
 
     rclcpp::Rate rate(1);  // 1 Hz
     while(rclcpp::ok() && !node->current_state.connected){
@@ -15,6 +20,12 @@ int main(int argc, char **argv) {
         rclcpp::spin_some(node);
         rate.sleep();
     }
+
+    executor.add_node(yolo);
+    executor.add_node(node);
+
+    executor.spin();
+
     node->run();
     rclcpp::shutdown();
     return 0;

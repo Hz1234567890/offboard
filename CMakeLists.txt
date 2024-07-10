@@ -9,6 +9,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(mavros_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(OpenCV 4.7.0 REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(ros2_interfaces REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 
 if(BUILD_TESTING)
@@ -24,9 +28,9 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-add_executable(offboard src/main.cpp src/OffboardControl.cpp src/OffboardControl.hpp src/init.cpp src/speed.cpp src/takeoff.cpp src/module.cpp)
+add_executable(offboard src/main.cpp src/OffboardControl.cpp src/OffboardControl.hpp src/init.cpp src/speed.cpp src/takeoff.cpp src/module.cpp src/YOLO.hpp src/PID.cpp)
 add_executable(only src/offboard.cpp)
-ament_target_dependencies(offboard rclcpp geometry_msgs mavros_msgs)
+ament_target_dependencies(offboard rclcpp geometry_msgs mavros_msgs OpenCV cv_bridge ros2_interfaces sensor_msgs)
 ament_target_dependencies(only rclcpp geometry_msgs mavros_msgs)
 
 install(TARGETS

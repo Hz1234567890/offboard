@@ -1,6 +1,6 @@
 #include "OffboardControl.hpp"
 
-OffboardControl::OffboardControl()
+OffboardControl::OffboardControl(std::shared_ptr<YOLO> yolo)
     : Node("OffboardControl")
 {
     twist_stamped_publisher = this->create_publisher<geometry_msgs::msg::TwistStamped>("/mavros/setpoint_velocity/cmd_vel", 5);
@@ -10,12 +10,16 @@ OffboardControl::OffboardControl()
                                                                        state_callback(msg);
                                                                    });
     local_pos_pub = this->create_publisher<geometry_msgs::msg::PoseStamped>("/mavros/setpoint_position/local", 5);
+    rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder/rangefinder", 10, 
+                                                                    std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
     // home_position_subscription_ = this->create_subscription<mavros_msgs::msg::HomePosition>("mavros/home_position/home", 10,
     // 		std::bind(&OffboardControl::home_position_callback, this, std::placeholders::_1));
     // timer_ = this->create_wall_timer(
     //     std::chrono::seconds(1),
     //     std::bind(&OffboardControl::timer_callback, this));
     servo_client_ = this->create_client<mavros_msgs::srv::CommandLong>("mavros/cmd/command");
+    
+    this->yolo=yolo;
     
 }
 
@@ -25,8 +29,6 @@ void OffboardControl::run()
     init();
     RCLCPP_INFO(this->get_logger(), "结束init函数");
     takeoff(3); // 起飞高度3米
-    double dx_shot = 0.0, dy_shot = 30.0;
-    double dx_see = 0.0, dy_see = 55.0;
     double x_shot = 0.0, y_shot = 0.0, angle = headingangle_compass;
     double x_see = 0.0, y_see = 0.0;//angle角度同shot。
     // headingangle_compass为罗盘读数
@@ -40,13 +42,14 @@ void OffboardControl::run()
     RCLCPP_INFO(this->get_logger(), "开始前往投弹区起点");
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
     rclcpp::sleep_for(std::chrono::seconds(10));
-    surround_shot(dx_shot,dy_shot,shot_length,shot_width);
-    RCLCPP_INFO(this->get_logger(), "3s后投弹");
-    rclcpp::sleep_for(std::chrono::seconds(3));
-    servo_controller(12,1050);
+    RCLCPP_INFO(this->get_logger(), "到达投弹起点");
+    Doshot();
+    // surround_shot(dx_shot,dy_shot,shot_length,shot_width);
     /**
      * 这里需要加入PID的函数
     */
+    //确保舵机制动
+    servo_controller(12,1800);
     RCLCPP_INFO(this->get_logger(), "投弹完成，3s后前往侦查区域");
     rclcpp::sleep_for(std::chrono::seconds(3));
     RCLCPP_INFO(this->get_logger(), "开始前往侦查起点");   
@@ -81,6 +84,10 @@ void OffboardControl::home_position_callback(const mavros_msgs::msg::HomePositio
     // RCLCPP_INFO(this->get_logger(), "X: %f", msg->position.x);
     // RCLCPP_INFO(this->get_logger(), "Y: %f", msg->position.y);
     // RCLCPP_INFO(this->get_logger(), "Z: %f", msg->position.z);
+}
+
+void OffboardControl::range_callback(const sensor_msgs::msg::Range::SharedPtr msg){
+    now_halt=msg->range;
 }
 
 void OffboardControl::dxyToGlobal(double dx, double dy, double headingangle_compass, double& x, double& y, double& angle) {
