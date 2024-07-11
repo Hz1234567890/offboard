@@ -10,7 +10,7 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
     static double integral_y = 0;
     static double integral_z = 0;
 
-	double error_x = target_x-now_x;
+	double error_x = -(target_x-now_x);
 	double error_y = target_y-now_y;
 	double error_z = target_z-now_z;
  
@@ -42,9 +42,9 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	//double derivative_z = (error_z - previous_error_z) / dt;
 	//double derivative_yaw = (error_yaw - previous_error_yaw) / dt;	
 
-	double output_x = kp * error_x + ki * integral_x + kd * velocity_x;
-	double output_y = kp * error_y + ki * integral_y + kd * velocity_y;
-	double output_z = kp * error_z + ki * integral_z + kd * velocity_z;
+	double output_x = k*(kp * error_x + ki * integral_x + kd * velocity_x);
+	double output_y = k*(kp * error_y + ki * integral_y + kd * velocity_y);
+	double output_z = k*(kp * error_z + ki * integral_z + kd * velocity_z);
 
 	previous_error_x = error_x;
 	previous_error_y = error_y;

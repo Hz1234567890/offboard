@@ -16,7 +16,7 @@ OffboardControl::OffboardControl(std::shared_ptr<YOLO> yolo)
     // 		std::bind(&OffboardControl::home_position_callback, this, std::placeholders::_1));
     // timer_ = this->create_wall_timer(
     //     std::chrono::seconds(1),
-    //     std::bind(&OffboardControl::timer_callback, this));
+    //     std::bind(&OffboardControl::run, this));
     servo_client_ = this->create_client<mavros_msgs::srv::CommandLong>("mavros/cmd/command");
     
     this->yolo=yolo;
@@ -59,6 +59,8 @@ void OffboardControl::run()
     // rclcpp::sleep_for(std::chrono::seconds(10));
     // send_velocity_command(2,0,0);
     set_mode("RTL");
+    timer_->cancel();
+    rclcpp::shutdown();
 }
 
 void OffboardControl::state_callback(const mavros_msgs::msg::State::SharedPtr msg)

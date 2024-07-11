@@ -7,6 +7,7 @@
 
 //初始化运动节点
 void OffboardControl::init(){
+    RCLCPP_INFO(this->get_logger(), "开始初始化舵机");
     //初始化舵机操作
     while (!servo_client_->wait_for_service(std::chrono::seconds(1))) {
         if (!rclcpp::ok()) {
@@ -17,6 +18,7 @@ void OffboardControl::init(){
     }
 
     servo_controller(12, 1050);
+    RCLCPP_INFO(this->get_logger(), "结束初始化舵机");
     //创建一个Rate对象，设置为每秒20次循环
     rclcpp::Rate rate(10);
 

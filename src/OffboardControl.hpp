@@ -60,6 +60,7 @@ public:
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
 
+    void Doland();
 private:
     typedef struct
     {

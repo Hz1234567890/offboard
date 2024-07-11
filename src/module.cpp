@@ -14,12 +14,14 @@ void OffboardControl::Doshot()
         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
         {
             if (now - start > std::chrono::seconds(3)){
+                RCLCPP_INFO(this->get_logger(), "前往下一点");
                 surround_shot_goto_next(dx_shot,dy_shot,shot_length,shot_width);
                 start = std::chrono::system_clock::now();
             }
         }
         else
         {
+            RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
             PID(this->yolo->get_x(), this->yolo->get_y(), now_halt, target_x, target_y, target_z, accuracy, z_accuracy, k,kp, ki, kd, dt);
         }
     }
@@ -93,3 +95,33 @@ void OffboardControl::surround_see(double x, double y, double length, double wid
     RCLCPP_INFO(this->get_logger(), "侦查区点位5 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
 }
+
+// void OffboardControl::Doland(){
+//     RCLCPP_INFO(this->get_logger(), "Doshot");
+//     auto Doshot_start = std::chrono::system_clock::now();
+//     auto start = std::chrono::system_clock::now();
+//     while (this->yolo->get_flag() == 0)
+//     {
+//         auto now = std::chrono::system_clock::now();
+//         if(now-Doshot_start > std::chrono::seconds(40)){
+//             break;
+//         }
+//         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
+//         {
+//             if (now - start > std::chrono::seconds(3)){
+//                 RCLCPP_INFO(this->get_logger(), "前往下一点");
+//                 surround_shot_goto_next(dx_shot,dy_shot,shot_length,shot_width);
+//                 start = std::chrono::system_clock::now();
+//             }
+//         }
+//         else
+//         {
+//             RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
+//             PID(this->yolo->get_x(), this->yolo->get_y(), now_halt, target_x, target_y, target_z, accuracy, z_accuracy, k,kp, ki, kd, dt);
+//         }
+//     }
+//     send_velocity_command_with_time(0,0,0,2);
+//     RCLCPP_INFO(this->get_logger(), "2s后投弹");
+//     servo_controller(12,1800);
+//     rclcpp::sleep_for(std::chrono::seconds(1));
+// }

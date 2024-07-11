@@ -22,12 +22,14 @@ int main(int argc, char **argv) {
     }
 
     executor.add_node(yolo);
-    executor.add_node(node);
-
-    executor.spin();
-
+    // executor.add_node(node);
+    std::thread spin_thread([&executor]() { executor.spin(); });
     node->run();
+    // executor.spin();
+
+    
     rclcpp::shutdown();
+    spin_thread.join();
     return 0;
 }
 
