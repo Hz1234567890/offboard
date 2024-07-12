@@ -59,6 +59,9 @@ void OffboardControl::run()
     // rclcpp::sleep_for(std::chrono::seconds(10));
     // send_velocity_command(2,0,0);
     set_mode("RTL");
+    rclcpp::sleep_for(std::chrono::seconds(10));
+    set_mode("GUIDED");
+    Doland();
     timer_->cancel();
     rclcpp::shutdown();
 }

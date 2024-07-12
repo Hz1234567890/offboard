@@ -96,32 +96,37 @@ void OffboardControl::surround_see(double x, double y, double length, double wid
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
 }
 
-// void OffboardControl::Doland(){
-//     RCLCPP_INFO(this->get_logger(), "Doshot");
-//     auto Doshot_start = std::chrono::system_clock::now();
-//     auto start = std::chrono::system_clock::now();
-//     while (this->yolo->get_flag() == 0)
-//     {
-//         auto now = std::chrono::system_clock::now();
-//         if(now-Doshot_start > std::chrono::seconds(40)){
-//             break;
-//         }
-//         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
-//         {
-//             if (now - start > std::chrono::seconds(3)){
-//                 RCLCPP_INFO(this->get_logger(), "前往下一点");
-//                 surround_shot_goto_next(dx_shot,dy_shot,shot_length,shot_width);
-//                 start = std::chrono::system_clock::now();
-//             }
-//         }
-//         else
-//         {
-//             RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
-//             PID(this->yolo->get_x(), this->yolo->get_y(), now_halt, target_x, target_y, target_z, accuracy, z_accuracy, k,kp, ki, kd, dt);
-//         }
-//     }
-//     send_velocity_command_with_time(0,0,0,2);
-//     RCLCPP_INFO(this->get_logger(), "2s后投弹");
-//     servo_controller(12,1800);
-//     rclcpp::sleep_for(std::chrono::seconds(1));
-// }
+void OffboardControl::Doland(){
+    RCLCPP_INFO(this->get_logger(), "Doland");
+    double x_home = 0.0, y_home = 0.0, angle = headingangle_compass;
+    dxyToGlobal(0,2,headingangle_compass,x_home,y_home,angle);
+    RCLCPP_INFO(this->get_logger(), "返回降落准备点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
+    send_local_setpoint_command(x_home,y_home,2,angle);
+
+
+    dxyToGlobal(0,0,headingangle_compass,x_home,y_home,angle);
+    RCLCPP_INFO(this->get_logger(), "返回降落点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
+    auto Doshot_start = std::chrono::system_clock::now();
+    auto start = std::chrono::system_clock::now();
+    bool is_land=false;
+
+    while (!is_land)
+    {
+        auto now = std::chrono::system_clock::now();
+        if(now-Doshot_start > std::chrono::seconds(20)){
+            break;
+        }
+        if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
+        {
+            send_local_setpoint_command(x_home,y_home,2.5,angle);
+        }
+        else
+        {
+            RCLCPP_INFO(this->get_logger(), "看见H了，执行PID_rtl");
+            PID_rtl(this->yolo->get_x(), this->yolo->get_y(), now_halt, target_x, target_y,is_land);
+        }
+    }
+    send_velocity_command_with_time(0,0,0,1);
+    RCLCPP_INFO(this->get_logger(), "1s后降落");
+    set_mode("LAND");
+}

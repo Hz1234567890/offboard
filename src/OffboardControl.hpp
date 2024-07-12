@@ -60,6 +60,9 @@ public:
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
 
+    //降落时的PID控制函数
+    void PID_rtl(double now_x, double now_y, double now_z,double target_x, double target_y,bool &is_land);
+    //降落函数
     void Doland();
 private:
     typedef struct
@@ -91,9 +94,9 @@ private:
     const double ki = 0.006;
     const double kd = 0.13;
 
-    const double max_vx=0.2;
-    const double max_vy=0.2;
-    const double max_vz=0.2;
+    const double max_vx=0.3;
+    const double max_vy=0.3;
+    const double max_vz=0.3;
 
     struct surround_shot_coord
     {
