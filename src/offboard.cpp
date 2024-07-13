@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     // 等待10秒
     rclcpp::sleep_for(std::chrono::seconds(10));
 
-    auto local_vel_pub = node->create_publisher<geometry_msgs::msg::Twist>("/mavros/setpoint_velocity/cmd_vel", 5);
+    auto local_vel_pub = node->create_publisher<geometry_msgs::msg::TwistStamped>("/mavros/setpoint_velocity/cmd_vel", 5);
     auto local_pos_pub = node->create_publisher<geometry_msgs::msg::PoseStamped>("mavros/setpoint_position/local", 10);
     
     auto time_start = node->now();
@@ -94,6 +94,18 @@ int main(int argc, char **argv) {
 
     geometry_msgs::msg::TwistStamped vel;
 
+
+
+    pose.pose.position.x = 10;
+    pose.pose.position.y = 0;
+    pose.pose.orientation.x = 0;
+    pose.pose.orientation.y = 0;
+    pose.pose.orientation.z = 1;
+    pose.pose.orientation.w = 0;
+
+    local_pos_pub->publish(pose);
+    RCLCPP_INFO(node->get_logger(), "Pub pose: x=%d,y=%d",pose.pose.position.x,pose.pose.position.y);
+    rclcpp::sleep_for(std::chrono::seconds(3)); // 暂停1秒
     // 转圈圈飞行
     while (rclcpp::ok()) {
         auto now = node->now();
@@ -118,23 +130,16 @@ int main(int argc, char **argv) {
         // }
         
 
-        pose.pose.position.x = 10;
-        pose.pose.position.y = 0;
-        pose.pose.orientation.x = 0;
-        pose.pose.orientation.y = 0;
-        pose.pose.orientation.z = 1;
-        pose.pose.orientation.w = 0;
+
 
         vel.twist.linear.x = 0.2;
         vel.twist.linear.y = 0.5;
         vel.twist.linear.z = 0.5;
 
-        local_pos_pub->publish(pose);
-        RCLCPP_INFO(node->get_logger(), "Pub pose: x=%d,y=%d",pose.pose.position.x,pose.pose.position.y);
-        rclcpp::sleep_for(std::chrono::seconds(20)); // 暂停1秒
+        
         local_vel_pub->publish(vel);
         RCLCPP_INFO(node->get_logger(), "Pub vel");
-        rclcpp::sleep_for(std::chrono::seconds(20)); // 暂停1秒
+        // rclcpp::sleep_for(std::chrono::seconds(20)); // 暂停1秒
 
         rclcpp::spin_some(node);
         rate.sleep();
