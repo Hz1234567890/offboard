@@ -1,6 +1,6 @@
 #include "ros2_interfaces/msg/coord.hpp"
-#include <opencv2/opencv.hpp>
-#include "cv_bridge/cv_bridge.h"
+// #include <opencv2/opencv.hpp>
+// #include "cv_bridge/cv_bridge.h"
 
 class YOLO : public rclcpp::Node
 {
