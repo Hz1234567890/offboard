@@ -75,10 +75,10 @@ private:
     double now_halt; // 无人机当前高度，激光雷达数据
     std::shared_ptr<YOLO> yolo;
     const double headingangle_compass = 180.0;
-    const double shot_length = 7.0;
+    const double shot_length = 8.0;
     const double shot_width = 5.0;
-    const double shot_halt = 2.5;
-    const double see_length = 7.0;
+    const double shot_halt = 3.5;
+    const double see_length = 8.0;
     const double see_width = 5.0;
     const double see_halt = 4.0;
     const int servo_number = 12;
@@ -88,15 +88,15 @@ private:
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
 
-    const double k = 0.002;
+    const double k = 0.5;
     const double dt = 0.5;
     const double kp = 0.205;
-    const double ki = 0.006;
-    const double kd = 0.13;
+    const double ki = 0.0;
+    const double kd = 0.0;
 
-    const double max_vx=0.3;
-    const double max_vy=0.3;
-    const double max_vz=0.3;
+    const double max_vx=0.6;
+    const double max_vy=0.6;
+    const double max_vz=0.6;
 
     struct surround_shot_coord
     {
