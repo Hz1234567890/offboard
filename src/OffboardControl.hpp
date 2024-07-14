@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+
+#include <fstream>
+#include <vector>
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
@@ -51,7 +54,7 @@ public:
     // 舵机控制函数
     void servo_controller(int servo_number, float position);
     // PID控制函数
-    void PID(double now_x, double now_y, double now_z, double target_x, double target_y, double target_z, double accuracy, double z_accuracy, double k,double kp, double ki, double kd, double dt);
+    void PID(double now_x, double now_y, double now_z, double target_x, double target_y, double target_z, double accuracy, double z_accuracy, double k, double kp, double ki, double kd, double dt);
 
     // 投弹函数
     void Doshot();
@@ -60,10 +63,11 @@ public:
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
 
-    //降落时的PID控制函数
-    void PID_rtl(double now_x, double now_y, double now_z,double target_x, double target_y,bool &is_land);
-    //降落函数
+    // 降落时的PID控制函数
+    void PID_rtl(double now_x, double now_y, double now_z, double target_x, double target_y, bool &is_land);
+    // 降落函数
     void Doland();
+
 private:
     typedef struct
     {
@@ -90,18 +94,17 @@ private:
 
     const double k = 0.5;
     const double dt = 0.5;
-    const double kp = 0.205;
-    const double ki = 0.0;
-    const double kd = 0.0;
+    double kp = 0.0;//0.48
+    double ki = 0.0; // 0.01
+    double kd = 0.0; // 0.45
 
-    const double max_vx=0.6;
-    const double max_vy=0.6;
-    const double max_vz=0.6;
-
+    const double max_vx = 0.6;
+    const double max_vy = 0.6;
+    const double max_vz = 0.6;
     struct surround_shot_coord
     {
         double dx, dy;
-    } surround_shot_points[10] = {{0.0, 0.0}, {0.0, 1.0}, {-0.25, 0.66667}, {-0.25, 0.33333}, {0.0, 0.0}, {0.25, 0.33333}, {0.25, 0.66667}, {0.0, 1.0}};
+    } surround_shot_points[13] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}};
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;
