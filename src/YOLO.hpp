@@ -12,8 +12,8 @@ public:
             10, 
             std::bind(&YOLO::coord_callback, this, std::placeholders::_1)
         );
-        rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder_pub", 10, 
-                                                                    std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
+        rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder/rangefinder", 10, 
+                                                                    std::bind(&YOLO::range_callback, this, std::placeholders::_1));
     }
 	float get_x(){
 		return x;
@@ -34,7 +34,7 @@ private:
     double halt;
     rclcpp::Subscription<ros2_interfaces::msg::Coord>::SharedPtr subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;
-
+    rclcpp::Subscription<sensor_msgs::msg::Range>::SharedPtr rangefinder_sub; // 激光雷达高度
     void coord_callback(const ros2_interfaces::msg::Coord::SharedPtr msg)
     {
          x = msg->x;
@@ -43,7 +43,7 @@ private:
 		// (void)flag;
         //RCLCPP_INFO(this->get_logger(), "收到坐标(%f, %f), flag_servo = %d", x, y, flag);
     }
-    void OffboardControl::range_callback(const sensor_msgs::msg::Range::SharedPtr msg){
+    void range_callback(const sensor_msgs::msg::Range::SharedPtr msg){
         halt=msg->range;
     }
 };

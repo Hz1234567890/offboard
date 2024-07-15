@@ -10,8 +10,9 @@ OffboardControl::OffboardControl(std::shared_ptr<YOLO> yolo)
                                                                        state_callback(msg);
                                                                    });
     local_pos_pub = this->create_publisher<geometry_msgs::msg::PoseStamped>("/mavros/setpoint_position/local", 5);
-    // rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder_pub", 10, 
-    //                                                                 std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
+    //
+    rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder/rangefinder", 1, 
+                                                                    std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
     // home_position_subscription_ = this->create_subscription<mavros_msgs::msg::HomePosition>("mavros/home_position/home", 10,
     // 		std::bind(&OffboardControl::home_position_callback, this, std::placeholders::_1));
     // timer_ = this->create_wall_timer(
