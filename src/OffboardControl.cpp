@@ -10,8 +10,8 @@ OffboardControl::OffboardControl(std::shared_ptr<YOLO> yolo)
                                                                        state_callback(msg);
                                                                    });
     local_pos_pub = this->create_publisher<geometry_msgs::msg::PoseStamped>("/mavros/setpoint_position/local", 5);
-    rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder/rangefinder", 10, 
-                                                                    std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
+    // rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder_pub", 10, 
+    //                                                                 std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
     // home_position_subscription_ = this->create_subscription<mavros_msgs::msg::HomePosition>("mavros/home_position/home", 10,
     // 		std::bind(&OffboardControl::home_position_callback, this, std::placeholders::_1));
     // timer_ = this->create_wall_timer(
@@ -41,7 +41,7 @@ void OffboardControl::run()
     RCLCPP_INFO(this->get_logger(), "侦查起点 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     RCLCPP_INFO(this->get_logger(), "开始前往投弹区起点");
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(10));
+    rclcpp::sleep_for(std::chrono::seconds(15));
     RCLCPP_INFO(this->get_logger(), "到达投弹起点");
     Doshot();
     // surround_shot(dx_shot,dy_shot,shot_length,shot_width);
@@ -62,6 +62,14 @@ void OffboardControl::run()
     rclcpp::sleep_for(std::chrono::seconds(10));
     set_mode("GUIDED");
     Doland();
+    char input;
+    // while(true){
+    //     std::cout << "Enter 'q' to quit: ";
+    //     std::cin >> input;
+    //     if (input == 'q' || input == 'Q') {
+    //         break;
+    //     }
+    // }
     timer_->cancel();
     rclcpp::shutdown();
 }

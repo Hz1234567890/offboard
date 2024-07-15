@@ -48,7 +48,7 @@ void OffboardControl::init()
         RCLCPP_INFO(this->get_logger(), "Servo Service not available, waiting again...");
     }
 
-    servo_controller(12, 1050);
+    // servo_controller(12, 1050);
     RCLCPP_INFO(this->get_logger(), "结束初始化舵机");
     // 创建一个Rate对象，设置为每秒20次循环
     rclcpp::Rate rate(10);

@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     // executor.add_node(node);
     std::thread spin_thread([&executor]() { executor.spin(); });
     node->run();
-    // executor.spin();
+    executor.spin();
 
     
     rclcpp::shutdown();

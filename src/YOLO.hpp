@@ -12,6 +12,8 @@ public:
             10, 
             std::bind(&YOLO::coord_callback, this, std::placeholders::_1)
         );
+        rangefinder_sub = this->create_subscription<sensor_msgs::msg::Range>("/mavros/rangefinder_pub", 10, 
+                                                                    std::bind(&OffboardControl::range_callback, this, std::placeholders::_1));
     }
 	float get_x(){
 		return x;
@@ -22,10 +24,14 @@ public:
     int get_flag(){
         return flag_servo;
     }
+    double get_halt(){
+        return halt;
+    }
 private:
 	float x;
 	float y;
     int flag_servo;
+    double halt;
     rclcpp::Subscription<ros2_interfaces::msg::Coord>::SharedPtr subscriber_;
     rclcpp::TimerBase::SharedPtr timer_;
 
@@ -37,5 +43,7 @@ private:
 		// (void)flag;
         //RCLCPP_INFO(this->get_logger(), "收到坐标(%f, %f), flag_servo = %d", x, y, flag);
     }
-    
+    void OffboardControl::range_callback(const sensor_msgs::msg::Range::SharedPtr msg){
+        halt=msg->range;
+    }
 };
