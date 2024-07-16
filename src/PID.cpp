@@ -92,13 +92,13 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f, z=%f", output_x, output_y, output_z);
 	send_velocity_command(output_x, output_y, output_z);
 
-	if (now_z > target_z + 0.3)
+	if (now_z > target_z + 0.2)
 	{
-		send_velocity_command(output_x, output_y, -0.2);
+		send_velocity_command(output_x, output_y, -0.15);
 	}
-	else if (now_z < target_z - 0.2)
+	else if (now_z < target_z - 0.1)
 	{
-		send_velocity_command(output_x, output_y, 0.1);
+		send_velocity_command(output_x, output_y, 0.05);
 	}
 	else
 	{

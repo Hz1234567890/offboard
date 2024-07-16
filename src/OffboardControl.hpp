@@ -89,7 +89,7 @@ private:
     const int servo_number = 12;
     const double dx_shot = 0.0, dy_shot = 30.0;
     const double dx_see = 0.0, dy_see = 55.0;
-    const double target_x = 320, target_y = 240, target_z = 1.5;
+    const double target_x = 320, target_y = 250, target_z = 1.2;
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
 
