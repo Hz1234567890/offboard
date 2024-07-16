@@ -1,22 +1,23 @@
 #include "OffboardControl.hpp"
 
-void OffboardControl::PID(double now_x, double now_y, double now_z, double target_x, double target_y, double target_z, double accuracy,double z_accuracy, double k, double kp, double ki, double kd,double dt){
-    RCLCPP_INFO(this->get_logger(), "Publishing setpoint: x=%lf, y=%lf, z=%lf", now_x, now_y, now_z);
-	static double previous_error_x = target_x-now_x;
-    static double previous_error_y = target_y-now_y;
-    static double previous_error_z = target_z-now_z;
+void OffboardControl::PID(double now_x, double now_y, double now_z, double target_x, double target_y, double target_z, double accuracy, double z_accuracy, double k, double kp, double ki, double kd, double dt)
+{
+	RCLCPP_INFO(this->get_logger(), "Publishing setpoint: x=%lf, y=%lf, z=%lf", now_x, now_y, now_z);
+	static double previous_error_x = target_x - now_x;
+	static double previous_error_y = target_y - now_y;
+	static double previous_error_z = target_z - now_z;
 
-    static double integral_x = 0;
-    static double integral_y = 0;
-    static double integral_z = 0;
+	static double integral_x = 0;
+	static double integral_y = 0;
+	static double integral_z = 0;
 
-	double error_x = -(target_x-now_x);
-	double error_y = target_y-now_y;
-	double error_z = target_z-now_z;
- 
+	double error_x = -(target_x - now_x);
+	double error_y = target_y - now_y;
+	double error_z = target_z - now_z;
+
 	const static int n = 10;
-	const static double integral_limit = 0.1;
-	static double integral_[n][4] = {0}; // 0:x, 1:y, 2:z
+	const static double integral_limit = 100;
+	static double integral_[n][3] = {0}; // 0:x, 1:y, 2:z
 	static int i = 0;
 	// 移除旧的积分值
 	integral_x -= integral_[i][0];
@@ -30,21 +31,21 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	integral_x = std::min(std::max(integral_x + error_x * dt, -integral_limit), integral_limit);
 	integral_y = std::min(std::max(integral_y + error_y * dt, -integral_limit), integral_limit);
 	integral_z = std::min(std::max(integral_z + error_z * dt, -integral_limit), integral_limit);
-	i = (i+1)%n;
 
+	i = (i + 1) % n;
 
 	double velocity_x = (error_x - previous_error_x) / dt;
 	double velocity_y = (error_y - previous_error_y) / dt;
 	double velocity_z = (error_z - previous_error_z) / dt;
 
-	//double derivative_x = (error_x - previous_error_x) / dt;
-	//double derivative_y = (error_y - previous_error_y) / dt;
-	//double derivative_z = (error_z - previous_error_z) / dt;
-	//double derivative_yaw = (error_yaw - previous_error_yaw) / dt;	
+	// double derivative_x = (error_x - previous_error_x) / dt;
+	// double derivative_y = (error_y - previous_error_y) / dt;
+	// double derivative_z = (error_z - previous_error_z) / dt;
+	// double derivative_yaw = (error_yaw - previous_error_yaw) / dt;
 
-	double output_x = k*(kp * error_x + ki * integral_x + kd * velocity_x);
-	double output_y = k*(kp * error_y + ki * integral_y + kd * velocity_y);
-	double output_z = k*(kp * error_z + ki * integral_z + kd * velocity_z);
+	double output_x = k * (kp * error_x + ki * integral_x + kd * velocity_x);
+	double output_y = k * (kp * error_y + ki * integral_y + kd * velocity_y);
+	double output_z = k * (kp * error_z + ki * integral_z + kd * velocity_z);
 
 	previous_error_x = error_x;
 	previous_error_y = error_y;
@@ -62,40 +63,50 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 			output_y*=ry;
 		}
 	}*/
-	double output_xy_d = sqrt(pow(output_x,2)+pow(output_y,2));
-	//double output_xy_d = output_x + output_y;
-	const double max_vxy = sqrt(pow(max_vx,2)+pow(max_vy,2));
-	//const double max_vxy = max_vx + max_vy;
-	if(output_xy_d>max_vxy){
-		double r= max_vxy/output_xy_d;
-		output_x*=r;
-		output_y*=r;
+	double output_xy_d = sqrt(pow(output_x, 2) + pow(output_y, 2));
+	// double output_xy_d = output_x + output_y;
+	const double max_vxy = sqrt(pow(max_vx, 2) + pow(max_vy, 2));
+	// const double max_vxy = max_vx + max_vy;
+	if (output_xy_d > max_vxy)
+	{
+		double r = max_vxy / output_xy_d;
+		output_x *= r;
+		output_y *= r;
 	}
-	if (output_x > max_vx) output_x = max_vx;
-	if (output_x < -max_vx) output_x = -max_vx;
-	if (output_y > max_vy) output_y = max_vy;
-	if (output_y < -max_vy) output_y = -max_vy;
-	if (output_z > max_vz) output_z = max_vz;
-	if (output_z < -max_vz) output_z = -max_vz;
-	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: error: x=%f, y=%f, z=%f", error_x, error_y,error_z);
+	if (output_x > max_vx)
+		output_x = max_vx;
+	if (output_x < -max_vx)
+		output_x = -max_vx;
+	if (output_y > max_vy)
+		output_y = max_vy;
+	if (output_y < -max_vy)
+		output_y = -max_vy;
+	if (output_z > max_vz)
+		output_z = max_vz;
+	if (output_z < -max_vz)
+		output_z = -max_vz;
+	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: error: x=%f, y=%f, z=%f", error_x, error_y, error_z);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: integral: x=%f, y=%f, z=%f", integral_x, integral_y, integral_z);
+	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: previous: x=%f, y=%f, z=%f", previous_error_x, previous_error_y, previous_error_z);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: velocity: x=%f, y=%f, z=%f", velocity_x, velocity_y, velocity_z);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f, z=%f", output_x, output_y, output_z);
-    // send_velocity_command(output_x, output_y, output_z);
+	send_velocity_command(output_x, output_y, output_z);
 
-	if(now_z>target_z+0.3){
+	if (now_z > target_z + 0.3)
+	{
 		send_velocity_command(output_x, output_y, -0.2);
 	}
-	else if(now_z<target_z-0.2){
+	else if (now_z < target_z - 0.2)
+	{
 		send_velocity_command(output_x, output_y, 0.1);
 	}
-	else{
+	else
+	{
 		send_velocity_command(output_x, output_y, 0);
 	}
 
-
 	// if(at_check_point()){
- 	// 	//RCLCPP_INFO(this->get_logger(), "at_check_point");
+	// 	//RCLCPP_INFO(this->get_logger(), "at_check_point");
 	// 	previous_error_x = 0;
 	// 	previous_error_y = 0;
 	// 	previous_error_z = 0;
@@ -105,46 +116,47 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	// 	integral_z = 0;
 	// 	integral_yaw = 0;
 	// }
-    if(abs(now_x-target_x)<accuracy && abs(now_y-target_y)<accuracy && abs(now_z-target_z)<z_accuracy){
-        
- 		//RCLCPP_INFO(this->get_logger(), "at_check_point");
+	if (abs(now_x - target_x) < accuracy && abs(now_y - target_y) < accuracy && abs(now_z - target_z) < z_accuracy)
+	{
+
+		// RCLCPP_INFO(this->get_logger(), "at_check_point");
 		previous_error_x = 0;
 		previous_error_y = 0;
 		previous_error_z = 0;
 		integral_x = 0;
 		integral_y = 0;
 		integral_z = 0;
-        // return true;
+		// return true;
 	}
-    // return false;
+	// return false;
 }
 
-
-void OffboardControl::PID_rtl(double now_x, double now_y, double now_z,double target_x, double target_y,bool &is_land){
-	double rtl_accuracy=40.0;
-	if(sqrt(pow(now_x-target_x,2)+pow(now_y-target_z,2))<rtl_accuracy){
+void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double target_x, double target_y, bool &is_land)
+{
+	double rtl_accuracy = 40.0;
+	if (sqrt(pow(now_x - target_x, 2) + pow(now_y - target_z, 2)) < rtl_accuracy)
+	{
 		is_land = 1;
 	}
-	double K =0.002;
-	double Dt=0.5;
-	double Kp=0.42;
-	double Ki=0.1;
-	double Kd=0.22;
-	
-	
+	double K = 0.002;
+	double Dt = 0.5;
+	double Kp = 0.42;
+	double Ki = 0.1;
+	double Kd = 0.22;
+
 	RCLCPP_INFO(this->get_logger(), "Publishing setpoint: x=%lf, y=%lf, z=%lf", now_x, now_y, now_z);
-	static double previous_error_x = target_x-now_x;
-    static double previous_error_y = target_y-now_y;
-    // static double previous_error_z = target_z-now_z;
+	static double previous_error_x = target_x - now_x;
+	static double previous_error_y = target_y - now_y;
+	// static double previous_error_z = target_z-now_z;
 
-    static double integral_x = 0;
-    static double integral_y = 0;
-    // static double integral_z = 0;
+	static double integral_x = 0;
+	static double integral_y = 0;
+	// static double integral_z = 0;
 
-	double error_x = -(target_x-now_x);
-	double error_y = target_y-now_y;
+	double error_x = -(target_x - now_x);
+	double error_y = target_y - now_y;
 	// double error_z = target_z-now_z;
- 
+
 	const static int n = 5;
 	const static double integral_limit = 0.1;
 	static double integral_[n][4] = {0}; // 0:x, 1:y, 2:z
@@ -161,20 +173,19 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z,double ta
 	integral_x = std::min(std::max(integral_x + error_x * dt, -integral_limit), integral_limit);
 	integral_y = std::min(std::max(integral_y + error_y * dt, -integral_limit), integral_limit);
 	// integral_z = std::min(std::max(integral_z + error_z * dt, -integral_limit), integral_limit);
-	i = (i+1)%n;
-
+	i = (i + 1) % n;
 
 	double velocity_x = (error_x - previous_error_x) / dt;
 	double velocity_y = (error_y - previous_error_y) / dt;
 	// double velocity_z = (error_z - previous_error_z) / dt;
 
-	//double derivative_x = (error_x - previous_error_x) / dt;
-	//double derivative_y = (error_y - previous_error_y) / dt;
-	//double derivative_z = (error_z - previous_error_z) / dt;
-	//double derivative_yaw = (error_yaw - previous_error_yaw) / dt;	
+	// double derivative_x = (error_x - previous_error_x) / dt;
+	// double derivative_y = (error_y - previous_error_y) / dt;
+	// double derivative_z = (error_z - previous_error_z) / dt;
+	// double derivative_yaw = (error_yaw - previous_error_yaw) / dt;
 
-	double output_x = k*(kp * error_x + ki * integral_x + kd * velocity_x);
-	double output_y = k*(kp * error_y + ki * integral_y + kd * velocity_y);
+	double output_x = k * (kp * error_x + ki * integral_x + kd * velocity_x);
+	double output_y = k * (kp * error_y + ki * integral_y + kd * velocity_y);
 	// double output_z = k*(kp * error_z + ki * integral_z + kd * velocity_z);
 
 	previous_error_x = error_x;
@@ -193,33 +204,40 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z,double ta
 			output_y*=ry;
 		}
 	}*/
-	double output_xy_d = sqrt(pow(output_x,2)+pow(output_y,2));
-	//double output_xy_d = output_x + output_y;
-	const double max_vxy = sqrt(pow(max_vx,2)+pow(max_vy,2));
-	//const double max_vxy = max_vx + max_vy;
-	if(output_xy_d>max_vxy){
-		double r= max_vxy/output_xy_d;
-		output_x*=r;
-		output_y*=r;
+	double output_xy_d = sqrt(pow(output_x, 2) + pow(output_y, 2));
+	// double output_xy_d = output_x + output_y;
+	const double max_vxy = sqrt(pow(max_vx, 2) + pow(max_vy, 2));
+	// const double max_vxy = max_vx + max_vy;
+	if (output_xy_d > max_vxy)
+	{
+		double r = max_vxy / output_xy_d;
+		output_x *= r;
+		output_y *= r;
 	}
-	if (output_x > max_vx) output_x = max_vx;
-	if (output_x < -max_vx) output_x = -max_vx;
-	if (output_y > max_vy) output_y = max_vy;
-	if (output_y < -max_vy) output_y = -max_vy;
+	if (output_x > max_vx)
+		output_x = max_vx;
+	if (output_x < -max_vx)
+		output_x = -max_vx;
+	if (output_y > max_vy)
+		output_y = max_vy;
+	if (output_y < -max_vy)
+		output_y = -max_vy;
 	// if (output_z > max_vz) output_z = max_vz;
 	// if (output_z < -max_vz) output_z = -max_vz;
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: error: x=%f, y=%f", error_x, error_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: integral: x=%f, y=%f", integral_x, integral_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: velocity: x=%f, y=%f", velocity_x, velocity_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f", output_x, output_y);
-    if(now_z>2){
+	if (now_z > 2)
+	{
 		send_velocity_command(output_x, output_y, -0.2);
 	}
-	else if(now_z<1.8){
+	else if (now_z < 1.8)
+	{
 		send_velocity_command(output_x, output_y, 0.1);
 	}
-	else{
+	else
+	{
 		send_velocity_command(output_x, output_y, 0);
 	}
-	
 }

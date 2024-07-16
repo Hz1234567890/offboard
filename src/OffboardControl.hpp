@@ -82,10 +82,10 @@ private:
     const double headingangle_compass = 180.0;
     const double shot_length = 8.0;
     const double shot_width = 5.0;
-    const double shot_halt = 3.5;
+    const double shot_halt = 3.0;
     const double see_length = 8.0;
     const double see_width = 5.0;
-    const double see_halt = 4.0;
+    const double see_halt = 3.0;
     const int servo_number = 12;
     const double dx_shot = 0.0, dy_shot = 30.0;
     const double dx_see = 0.0, dy_see = 55.0;
@@ -93,9 +93,9 @@ private:
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
 
-    const double k = 0.5;
+    const double k = 0.002;
     const double dt = 0.5;
-    double kp = 0.0;//0.48
+    double kp = 0.0; // 0.48
     double ki = 0.0; // 0.01
     double kd = 0.0; // 0.45
 
@@ -105,7 +105,7 @@ private:
     struct surround_shot_coord
     {
         double dx, dy;
-    } surround_shot_points[13] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}};
+    } surround_shot_points[13] = {{0.0, 0.5}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}};
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;

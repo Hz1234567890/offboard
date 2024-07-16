@@ -5,31 +5,65 @@ void OffboardControl::Doshot()
     RCLCPP_INFO(this->get_logger(), "Doshot");
     auto Doshot_start = std::chrono::system_clock::now();
     auto start = std::chrono::system_clock::now();
+    int surround_shot_count = 0;
     while (this->yolo->get_flag() == 0)
     {
-        RCLCPP_INFO(this->get_logger(), "当前高度：%lf",this->yolo->get_halt());
+        //RCLCPP_INFO(this->get_logger(), "当前高度：%lf",this->yolo->get_halt());
         auto now = std::chrono::system_clock::now();
-        if (now - Doshot_start > std::chrono::seconds(40))
+        if (now - Doshot_start > std::chrono::seconds(20000))
         {
             break;
         }
         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
-        {
+        {   
+            
             if (now - start > std::chrono::seconds(3))
-            {
+            {   //send_velocity_command(0, 0, 0);
                 RCLCPP_INFO(this->get_logger(), "前往下一点");
                 surround_shot_goto_next(dx_shot, dy_shot, shot_length, shot_width);
                 start = std::chrono::system_clock::now();
+                surround_shot_count++;
+                if (surround_shot_count > 12){
+                    break;
+                }
             }
         }
         else
         {
+            // RCLCPP_INFO(this->get_logger(), "获取PID参数");
+
+            // std::string filePath = "/home/hz/ros2_ws/src/offboard/src/can.txt";
+            // std::ifstream file(filePath);
+            // if (!file.is_open())
+            // {
+            //     RCLCPP_ERROR(this->get_logger(), "无法打开文件");
+            // }
+
+            // std::vector<double> parameters;
+            // double number;
+            // while (file >> number)
+            // {
+            //     parameters.push_back(number);
+            // }
+            // file.close();
+
+            // // 将vector中的数值复制到数组中
+            // int size = parameters.size();
+            // double *array = new double[size];
+            // for (int i = 0; i < size; ++i)
+            // {
+            //     array[i] = parameters[i];
+            // }
+            // kp = array[0];
+            // ki = array[1];
+            // kd = array[2];
+            // RCLCPP_INFO(this->get_logger(), "kp:%lf ki:%lf  kd:%lf", kp, ki, kd);
             RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
             PID(this->yolo->get_x(), this->yolo->get_y(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k, kp, ki, kd, dt);
         }
     }
-    send_velocity_command_with_time(0, 0, 0, 2);
-    RCLCPP_INFO(this->get_logger(), "2s后投弹");
+    send_velocity_command_with_time(0, 0, 0, 1);
+    RCLCPP_INFO(this->get_logger(), "1s后投弹");
     servo_controller(12, 1800);
     rclcpp::sleep_for(std::chrono::seconds(1));
 }

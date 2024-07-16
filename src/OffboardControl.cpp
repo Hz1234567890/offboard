@@ -42,7 +42,7 @@ void OffboardControl::run()
     RCLCPP_INFO(this->get_logger(), "侦查起点 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     RCLCPP_INFO(this->get_logger(), "开始前往投弹区起点");
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(15));
+    rclcpp::sleep_for(std::chrono::seconds(10));
     RCLCPP_INFO(this->get_logger(), "到达投弹起点");
     Doshot();
     // surround_shot(dx_shot,dy_shot,shot_length,shot_width);
