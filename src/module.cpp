@@ -17,7 +17,7 @@ void OffboardControl::Doshot()
         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
         {   
             
-            if (now - start > std::chrono::seconds(3))
+            if (now - start > std::chrono::seconds(1))
             {   //send_velocity_command(0, 0, 0);
                 RCLCPP_INFO(this->get_logger(), "前往下一点");
                 surround_shot_goto_next(dx_shot, dy_shot, shot_length, shot_width);
