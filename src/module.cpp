@@ -6,7 +6,7 @@ void OffboardControl::Doshot()
     auto Doshot_start = std::chrono::system_clock::now();
     auto start = std::chrono::system_clock::now();
     int surround_shot_count = 0;
-    while (this->yolo->get_flag() == 0)
+    while (this->yolo->get_flag() == 0 || this->yolo->get_halt() > 1.5)
     {
         //RCLCPP_INFO(this->get_logger(), "当前高度：%lf",this->yolo->get_halt());
         auto now = std::chrono::system_clock::now();
@@ -23,7 +23,7 @@ void OffboardControl::Doshot()
                 surround_shot_goto_next(dx_shot, dy_shot, shot_length, shot_width);
                 start = std::chrono::system_clock::now();
                 surround_shot_count++;
-                if (surround_shot_count > 12){
+                if (surround_shot_count > 24){
                     break;
                 }
             }
@@ -71,7 +71,7 @@ void OffboardControl::Doshot()
 void OffboardControl::surround_shot_goto_next(double x, double y, double length, double width)
 {
     static int surround_shot_cnt = 0;
-    if (surround_shot_cnt > 12)
+    if (surround_shot_cnt > 25)
     {
         RCLCPP_INFO(this->get_logger(), "投弹区与已经全部遍历");
         return;
@@ -112,28 +112,52 @@ void OffboardControl::surround_shot_goto_next(double x, double y, double length,
 void OffboardControl::surround_see(double x, double y, double length, double width)
 {
     double x_see = 0.0, y_see = 0.0, angle = headingangle_compass;
+    dxyToGlobal(x + (length / 4.0), y + (width / 2.0), headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位1_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x + (length / 2.0), y + width, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位1_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(5));
+    dxyToGlobal(x + (length / 2.0), y + (width / 2.0),, headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位2_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x + (length / 2.0), y, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位2_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(5));
+    dxyToGlobal(x + (length / 4.0), y + (width / 2.0), headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位3_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x, y + width, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位3 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位3_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(5));
+    dxyToGlobal(x - (length / 4.0), y +(width / 2.0), headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位4_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x - (length / 2.0), y, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位4 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位4_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(5));
+    dxyToGlobal(x - (length / 2.0), y + (width / 2.0), headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位5_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x - (length / 2.0), y + width, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位5 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位5_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(5));
+    dxyToGlobal(x - (length / 4.0), y + (width / 2.0), headingangle_compass, x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位6_1 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    send_local_setpoint_command(x_see, y_see, see_halt, angle);
+    rclcpp::sleep_for(std::chrono::seconds(5));
     dxyToGlobal(x, y, headingangle_compass, x_see, y_see, angle);
-    RCLCPP_INFO(this->get_logger(), "侦查区点位6 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
+    RCLCPP_INFO(this->get_logger(), "侦查区点位6_2 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     send_local_setpoint_command(x_see, y_see, see_halt, angle);
 }
 
@@ -145,7 +169,7 @@ void OffboardControl::Doland()
     RCLCPP_INFO(this->get_logger(), "返回降落准备点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
     send_local_setpoint_command(x_home, y_home, 2, angle);
 
-    dxyToGlobal(0, 0, headingangle_compass, x_home, y_home, angle);
+    dxyToGlobal(0, 1, headingangle_compass, x_home, y_home, angle);
     RCLCPP_INFO(this->get_logger(), "返回降落点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
     auto Doshot_start = std::chrono::system_clock::now();
     auto start = std::chrono::system_clock::now();

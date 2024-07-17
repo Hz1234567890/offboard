@@ -83,12 +83,12 @@ private:
     const double shot_length = 8.0;
     const double shot_width = 5.0;
     const double shot_halt = 3.0;
-    const double see_length = 8.0;
-    const double see_width = 5.0;
+    const double see_length = 7.0;
+    const double see_width = 6.0;
     const double see_halt = 3.0;
     const int servo_number = 12;
     const double dx_shot = 0.0, dy_shot = 30.0;
-    const double dx_see = 0.0, dy_see = 55.0;
+    const double dx_see = 0.0, dy_see = 53.7;
     const double target_x = 320, target_y = 250, target_z = 1.2;
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
@@ -105,7 +105,34 @@ private:
     struct surround_shot_coord
     {
         double dx, dy;
-    } surround_shot_points[13] = {{0.0, 0.5}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}};
+    } struct surround_shot_coord
+    {
+        double dx, dy;
+    } surround_shot_points[25] = {{0.0, 0.0},
+                                  {0.0, 0.5},
+                                  {0.0, 1.0},
+                                  {-0.083335, 0.8333349999999999},
+                                  {-0.16667, 0.66667},
+                                  {-0.16667, 0.5},
+                                  {-0.16667, 0.33333},
+                                  {-0.083335, 0.166665},
+                                  {0.0, 0.0},
+                                  {0.083335, 0.166665},
+                                  {0.16667, 0.33333},
+                                  {0.16667, 0.5},
+                                  {0.16667, 0.66667},
+                                  {0.083335, 0.8333349999999999},
+                                  {0.0, 1.0},
+                                  {-0.166665, 1.0},
+                                  {-0.33333, 1.0},
+                                  {-0.33333, 0.5},
+                                  {-0.33333, 0.0},
+                                  {0.0, 0.0},
+                                  {0.33333, 0.0},
+                                  {0.33333, 0.5},
+                                  {0.33333, 1.0},
+                                  {0.166665, 1.0},
+                                  {0.0, 1.0}};
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;
