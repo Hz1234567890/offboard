@@ -133,9 +133,10 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 
 void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double target_x, double target_y, bool &is_land)
 {
-	double rtl_accuracy = 40.0;
+	double rtl_accuracy = 30.0;
 	if (sqrt(pow(now_x - target_x, 2) + pow(now_y - target_z, 2)) < rtl_accuracy)
 	{
+		RCLCPP_INFO(this->get_logger(), "到达降落范围内，降落");
 		is_land = 1;
 	}
 	double K = 0.002;
@@ -228,11 +229,11 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double t
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: integral: x=%f, y=%f", integral_x, integral_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: velocity: x=%f, y=%f", velocity_x, velocity_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f", output_x, output_y);
-	if (now_z > 2)
+	if (now_z > 1.8)
 	{
 		send_velocity_command(output_x, output_y, -0.2);
 	}
-	else if (now_z < 1.8)
+	else if (now_z < 1.5)
 	{
 		send_velocity_command(output_x, output_y, 0.1);
 	}
