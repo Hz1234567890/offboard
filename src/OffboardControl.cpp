@@ -36,13 +36,13 @@ void OffboardControl::run()
     // angle为四元数的角度，
     // dx,dy为飞机坐标系下的横纵坐标
     // x,y为global坐标下的，x正指向正东，y正指向正北
-    dxyToGlobal(dx_shot, dy_shot, headingangle_compass, x_shot, y_shot, angle);
+    dxyToGlobal(dx_shot, dy_shot-0.5, headingangle_compass, x_shot, y_shot, angle);
     RCLCPP_INFO(this->get_logger(), "投弹区起点 x: %lf   y: %lf    angle: %lf", x_shot, y_shot, angle);
     dxyToGlobal(dx_see,dy_see,headingangle_compass,x_see,y_see,angle);
     RCLCPP_INFO(this->get_logger(), "侦查起点 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     RCLCPP_INFO(this->get_logger(), "开始前往投弹区起点");
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(10));
+    rclcpp::sleep_for(std::chrono::seconds(8));
     RCLCPP_INFO(this->get_logger(), "到达投弹起点");
     Doshot();
     // surround_shot(dx_shot,dy_shot,shot_length,shot_width);
