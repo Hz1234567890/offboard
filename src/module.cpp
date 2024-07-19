@@ -10,7 +10,7 @@ void OffboardControl::Doshot()
     {
         // RCLCPP_INFO(this->get_logger(), "当前高度：%lf",this->yolo->get_halt());
         auto now = std::chrono::system_clock::now();
-        if (now - Doshot_start > std::chrono::seconds(20000))
+        if (now - Doshot_start > std::chrono::seconds(60))
         {
             RCLCPP_INFO(this->get_logger(), "超时");
             break;
@@ -24,7 +24,7 @@ void OffboardControl::Doshot()
                 surround_shot_goto_next(dx_shot, dy_shot, shot_length, shot_width);
                 start = std::chrono::system_clock::now();
                 surround_shot_count++;
-                if (surround_shot_count > 24)
+                if (surround_shot_count > 12)
                 {
                     break;
                 }
@@ -45,7 +45,7 @@ void OffboardControl::Doshot()
 void OffboardControl::surround_shot_goto_next(double x, double y, double length, double width)
 {
     static int surround_shot_cnt = 0;
-    if (surround_shot_cnt > 24)
+    if (surround_shot_cnt > 12)
     {
         RCLCPP_INFO(this->get_logger(), "投弹区与已经全部遍历");
         return;

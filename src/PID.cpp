@@ -141,9 +141,10 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double t
 	}
 	double K = 0.002;
 	double Dt = 0.5;
+	//Ki和Kd实际上是有的，但是好像没有作用，在hjw的代码中，所以这里将Ki和Kd都设置为0
 	double Kp = 0.42;
-	double Ki = 0.1;
-	double Kd = 0.22;
+	double Ki = 0.0;
+	double Kd = 0.0;
 
 	RCLCPP_INFO(this->get_logger(), "Publishing setpoint: x=%lf, y=%lf, z=%lf", now_x, now_y, now_z);
 	static double previous_error_x = target_x - now_x;

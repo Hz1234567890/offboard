@@ -82,14 +82,16 @@ private:
     const double headingangle_compass = 180.0;
     const double shot_length = 8.0;
     const double shot_width = 5.0;
-    const double shot_halt = 3.0;
+    const double shot_halt = 4.0;
     const double see_length = 7.0;
     const double see_width = 6.0;
     const double see_halt = 3.0;
     const int servo_number = 12;
     const double dx_shot = 0.0, dy_shot = 10.0;
     const double dx_see = 0.0, dy_see = 15;//53.7
-    const double target_x = 317, target_y = 298, target_z = 1.2;
+    double target_x = 0.0;
+    double target_y = 0.0;
+    const double target_z = 1.2;
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
 

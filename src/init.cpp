@@ -35,7 +35,9 @@ void OffboardControl::init()
     kp = array[0];
     ki = array[1];
     kd = array[2];
-    RCLCPP_INFO(this->get_logger(), "kp:%lf ki:%lf  kd:%lf", kp, ki, kd);
+    target_x = array[3];
+    target_y = array[4];
+    RCLCPP_INFO(this->get_logger(), "kp:%lf ki:%lf  kd:%lf target_x:%lf target_y:%lf", kp, ki, kd, target_x, target_y);
     RCLCPP_INFO(this->get_logger(), "开始初始化舵机");
     // 初始化舵机操作
     while (!servo_client_->wait_for_service(std::chrono::seconds(1)))
