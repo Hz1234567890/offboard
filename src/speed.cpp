@@ -17,14 +17,16 @@ void OffboardControl::send_velocity_command_with_time(double linear_x, double li
 
     double x = 0.0, y = 0.0, angle = headingangle_compass;
     dxyToGlobal(linear_x, linear_y, headingangle_compass, x, y, angle);
-
-    twist_stamped.header.stamp = this->now();
-    twist_stamped.twist.linear.x = x;
-    twist_stamped.twist.linear.y = y;
-    twist_stamped.twist.linear.z = linear_z;
-
-    twist_stamped_publisher->publish(twist_stamped);
-    rclcpp::sleep_for(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time)));
+    auto start = std::chrono::system_clock::now();
+    auto now = std::chrono::system_clock::now();
+    while(now - start < std::chrono::seconds(time)){
+        twist_stamped.header.stamp = this->now();
+        twist_stamped.twist.linear.x = x;
+        twist_stamped.twist.linear.y = y;
+        twist_stamped.twist.linear.z = linear_z;
+        twist_stamped_publisher->publish(twist_stamped);
+        now = std::chrono::system_clock::now();
+    }
     twist_stamped.twist.linear.x = 0;
     twist_stamped.twist.linear.y = 0;
     twist_stamped.twist.linear.z = 0;

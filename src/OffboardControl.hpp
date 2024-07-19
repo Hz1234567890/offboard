@@ -60,7 +60,7 @@ public:
     // 投弹函数
     void Doshot();
     // 环绕投弹区
-    void surround_shot_goto_next(double x, double y, double length, double width);
+    // void surround_shot_goto_next(double x, double y, double length, double width);
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
 
@@ -79,7 +79,7 @@ private:
     Location home_position;
     double now_halt; // 无人机当前高度，激光雷达数据
     std::shared_ptr<YOLO> yolo;
-    const double headingangle_compass = 180.0;
+    double headingangle_compass = 180.0;
     const double shot_length = 8.0;
     const double shot_width = 5.0;
     const double shot_halt = 4.0;
