@@ -230,13 +230,9 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double t
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: integral: x=%f, y=%f", integral_x, integral_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: velocity: x=%f, y=%f", velocity_x, velocity_y);
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f", output_x, output_y);
-	if (now_z > 1.8)
+	if (now_z > 2.5)
 	{
 		send_velocity_command(output_x, output_y, -0.2);
-	}
-	else if (now_z < 1.5)
-	{
-		send_velocity_command(output_x, output_y, 0.1);
 	}
 	else
 	{

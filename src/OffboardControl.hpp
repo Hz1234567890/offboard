@@ -59,8 +59,8 @@ public:
 
     // 投弹函数
     void Doshot();
-    // 环绕投弹区
-    // void surround_shot_goto_next(double x, double y, double length, double width);
+    //环绕投弹区
+    void surround_shot_goto_next(double x, double y, double length, double width);
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
 
