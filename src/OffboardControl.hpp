@@ -59,7 +59,7 @@ public:
 
     // 投弹函数
     void Doshot();
-    //环绕投弹区
+    // 环绕投弹区
     void surround_shot_goto_next(double x, double y, double length, double width);
     // 环绕侦查区
     void surround_see(double x, double y, double length, double width);
@@ -80,23 +80,24 @@ private:
     double now_halt; // 无人机当前高度，激光雷达数据
     std::shared_ptr<YOLO> yolo;
     double headingangle_compass = 180.0;
-    const double shot_length = 8.0;
-    const double shot_width = 5.0;
+    const double shot_length = 7.0;
+    const double shot_width = 4.0;
     const double shot_halt = 4.0;
     const double see_length = 7.0;
     const double see_width = 6.0;
     const double see_halt = 3.0;
     const int servo_number = 12;
-    const double dx_shot = 0.0, dy_shot = 10.0;
-    const double dx_see = 0.0, dy_see = 15;//53.7
+    const double dx_shot = 0.0, dy_shot = 30.0;
+    const double dx_see = 0.0, dy_see = 54;
     double target_x = 0.0;
     double target_y = 0.0;
     const double target_z = 1.2;
     const double accuracy = 20.0;
     const double z_accuracy = 0.1;
 
-    const double k = 0.002;
-    const double dt = 0.5;
+    double k = 0.002;
+    double k1 = 0.001;
+    double dt = 0.5;
     double kp = 0.0; // 0.48
     double ki = 0.0; // 0.01
     double kd = 0.0; // 0.45
@@ -107,7 +108,7 @@ private:
     struct surround_shot_coord
     {
         double dx, dy;
-    } surround_shot_points[13] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}};
+    } surround_shot_points[14] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}, {0.0, 0.5}};
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;

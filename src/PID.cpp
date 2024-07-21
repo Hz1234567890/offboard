@@ -3,6 +3,7 @@
 void OffboardControl::PID(double now_x, double now_y, double now_z, double target_x, double target_y, double target_z, double accuracy, double z_accuracy, double k, double kp, double ki, double kd, double dt)
 {
 	RCLCPP_INFO(this->get_logger(), "Publishing setpoint: x=%lf, y=%lf, z=%lf", now_x, now_y, now_z);
+
 	static double previous_error_x = target_x - now_x;
 	static double previous_error_y = target_y - now_y;
 	static double previous_error_z = target_z - now_z;
@@ -92,10 +93,15 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	RCLCPP_INFO(this->get_logger(), "publish_trajectory_setpoint: output: x=%f, y=%f, z=%f", output_x, output_y, output_z);
 	send_velocity_command(output_x, output_y, output_z);
 
-	if (now_z > target_z + 0.2)
+	if (now_z > target_z + 0.6)
 	{
 		send_velocity_command(output_x, output_y, -0.15);
 	}
+	else if (now_z>target_z+0.2)
+	{
+		send_velocity_command(output_x, output_y, -0.10);
+	}
+	
 	else if (now_z < target_z - 0.1)
 	{
 		send_velocity_command(output_x, output_y, 0.05);
@@ -142,7 +148,7 @@ void OffboardControl::PID_rtl(double now_x, double now_y, double now_z, double t
 	double K = 0.002;
 	double Dt = 0.5;
 	//Ki和Kd实际上是有的，但是好像没有作用，在hjw的代码中，所以这里将Ki和Kd都设置为0
-	double Kp = 0.42;
+	double Kp = 0.5;
 	double Ki = 0.0;
 	double Kd = 0.0;
 
