@@ -42,7 +42,7 @@ void OffboardControl::run()
     RCLCPP_INFO(this->get_logger(), "侦查起点 x: %lf   y: %lf    angle: %lf", x_see, y_see, angle);
     RCLCPP_INFO(this->get_logger(), "开始前往投弹区起点");
     send_local_setpoint_command(x_shot, y_shot, shot_halt, angle);
-    rclcpp::sleep_for(std::chrono::seconds(14));
+    rclcpp::sleep_for(std::chrono::seconds(12));
     // rclcpp::sleep_for(std::chrono::seconds(3));
     RCLCPP_INFO(this->get_logger(), "到达投弹起点");
     Doshot();
@@ -53,7 +53,7 @@ void OffboardControl::run()
     //确保舵机制动
     servo_controller(12,1800);
     RCLCPP_INFO(this->get_logger(), "投弹完成，3s后前往侦查区域");
-    rclcpp::sleep_for(std::chrono::seconds(3));
+    rclcpp::sleep_for(std::chrono::seconds(2));
     RCLCPP_INFO(this->get_logger(), "开始前往侦查起点");   
     send_local_setpoint_command(x_see,y_see,see_halt,angle);
     rclcpp::sleep_for(std::chrono::seconds(11));
@@ -62,7 +62,7 @@ void OffboardControl::run()
     // rclcpp::sleep_for(std::chrono::seconds(10));
     // send_velocity_command(2,0,0);
     set_mode("RTL");
-    rclcpp::sleep_for(std::chrono::seconds(11));
+    rclcpp::sleep_for(std::chrono::seconds(13));
     set_mode("GUIDED");
     Doland();
     char input;

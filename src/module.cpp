@@ -213,24 +213,27 @@ void OffboardControl::Doland()
     double x_home = 0.0, y_home = 0.0, angle = headingangle_compass;
     dxyToGlobal(0, 2, headingangle_compass, x_home, y_home, angle);
     RCLCPP_INFO(this->get_logger(), "返回降落准备点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
-    send_local_setpoint_command(x_home, y_home, 2, angle);
+    send_local_setpoint_command(x_home, y_home, 4, angle);
+    rclcpp::sleep_for(std::chrono::seconds(6));
 
     dxyToGlobal(0, 0.5, headingangle_compass, x_home, y_home, angle);
     RCLCPP_INFO(this->get_logger(), "返回降落点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
+    send_local_setpoint_command(x_home, y_home, 4, angle);
+    rclcpp::sleep_for(std::chrono::seconds(2));
     auto Doland_start = std::chrono::system_clock::now();
     auto start = std::chrono::system_clock::now();
     bool is_land = false;
-    static int surround_land = -1;
+    static int surround_land = -3;
     while (!is_land)
     {
         auto now = std::chrono::system_clock::now();
-        if (now - Doland_start > std::chrono::seconds(20) || surround_land > 1)
+        if (now - Doland_start > std::chrono::seconds(20) || surround_land > 3)
         {
             break;
         }
         if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
         {
-            if (now - start > std::chrono::seconds(3))
+            if (now - start > std::chrono::duration<double>(1.5))
             {
                 RCLCPP_INFO(this->get_logger(), "surround_land = %d", surround_land);
 
