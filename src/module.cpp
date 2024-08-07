@@ -96,7 +96,7 @@ void OffboardControl::Doshot()
             RCLCPP_INFO(this->get_logger(), "超时");
             break;
         }
-        if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
+        if (this->yolo->get_x1() == 0 && this->yolo->get_y1() == 0)
         {
 
             if (now - start > std::chrono::seconds(3))
@@ -116,10 +116,10 @@ void OffboardControl::Doshot()
         {
             RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
             if(this->yolo->get_halt()>target_z+0.6){
-                PID(this->yolo->get_x(), this->yolo->get_y(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k1, kp, ki, kd, dt);
+                PID(this->yolo->get_x1(), this->yolo->get_y1(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k1, kp, ki, kd, dt);
             }
             else{
-                PID(this->yolo->get_x(), this->yolo->get_y(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k, kp, ki, kd, dt);
+                PID(this->yolo->get_x1(), this->yolo->get_y1(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k, kp, ki, kd, dt);
             }
             
         }
@@ -231,7 +231,7 @@ void OffboardControl::Doland()
         {
             break;
         }
-        if (this->yolo->get_x() == 0 && this->yolo->get_y() == 0)
+        if (this->yolo->get_x2() == 0 && this->yolo->get_y2() == 0)
         {
             if (now - start > std::chrono::duration<double>(1.5))
             {
@@ -247,7 +247,7 @@ void OffboardControl::Doland()
         else
         {
             RCLCPP_INFO(this->get_logger(), "看见H了，执行PID_rtl");
-            PID_rtl(this->yolo->get_x(), this->yolo->get_y(), now_halt, target_x, target_y, is_land);
+            PID_rtl(this->yolo->get_x2(), this->yolo->get_y2(), now_halt, target_x, target_y, is_land);
         }
     }
     send_velocity_command_with_time(0, 0, 0, 1);

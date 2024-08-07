@@ -122,18 +122,24 @@ void OffboardControl::PID(double now_x, double now_y, double now_z, double targe
 	// 	integral_z = 0;
 	// 	integral_yaw = 0;
 	// }
-	if (abs(now_x - target_x) < accuracy && abs(now_y - target_y) < accuracy && abs(now_z - target_z) < z_accuracy)
-	{
 
-		// RCLCPP_INFO(this->get_logger(), "at_check_point");
-		previous_error_x = 0;
-		previous_error_y = 0;
-		previous_error_z = 0;
-		integral_x = 0;
-		integral_y = 0;
-		integral_z = 0;
-		// return true;
-	}
+
+
+	// if (abs(now_x - target_x) < accuracy && abs(now_y - target_y) < accuracy && abs(now_z - target_z) < z_accuracy)
+	// {
+
+	// 	// RCLCPP_INFO(this->get_logger(), "at_check_point");
+	// 	previous_error_x = 0;
+	// 	previous_error_y = 0;
+	// 	previous_error_z = 0;
+	// 	integral_x = 0;
+	// 	integral_y = 0;
+	// 	integral_z = 0;
+	// 	// return true;
+	// }
+
+
+
 	// return false;
 }
 
