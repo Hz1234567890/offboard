@@ -83,8 +83,8 @@ private:
     const double shot_length = 7.0;
     const double shot_width = 4.0;
     const double shot_halt = 4.0;
-    const double see_length = 7.0;
-    const double see_width = 6.0;
+    const double see_length = 6.0;
+    const double see_width = 5.0;
     const double see_halt = 3.0;
     const int servo_number = 12;
     const double dx_shot = 0.0, dy_shot = 30.0;
