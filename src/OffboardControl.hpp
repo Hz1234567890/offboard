@@ -81,7 +81,7 @@ private:
     std::shared_ptr<YOLO> yolo;
     double headingangle_compass = 180.0;
     const double shot_length = 7.0; //x方向，左右方向 
-    const double shot_width = 6.0; //y方向，前后方向 符合直角坐标系
+    const double shot_width = 5.0; //y方向，前后方向 符合直角坐标系
     const double shot_halt = 4.0;
 
     const double see_length = 6.0;
@@ -89,7 +89,7 @@ private:
     const double see_halt = 3.0;
     
     const int servo_number = 12;
-    const double dx_shot = 0.0, dy_shot = 29;
+    const double dx_shot = 0.0, dy_shot = 30;
     const double dx_see = 0.0, dy_see = 54;
     double target_x = 0.0;
     double target_y = 0.0;
@@ -110,7 +110,7 @@ private:
     struct surround_shot_coord
     {
         double dx, dy;
-    } surround_shot_points[14] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 1.0}, {-0.33333, 0.0}, {0.33333, 0.0}, {0.33333, 1.0}, {0.0, 1.0}, {0.0, 0.5}};
+    } surround_shot_points[14] = {{0.0, 0.0}, {0.0, 1.0}, {-0.16667, 0.66667}, {-0.16667, 0.33333}, {0.0, 0.0}, {0.16667, 0.33333}, {0.16667, 0.66667}, {0.0, 1.0}, {-0.33333, 0.9}, {-0.33333, 0.1}, {0.33333, 0.1}, {0.33333, 0.9}, {0.0, 0.9}, {0.0, 0.5}};
     // auto node = rclcpp::Node::make_shared("offboard");
     // rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub;
