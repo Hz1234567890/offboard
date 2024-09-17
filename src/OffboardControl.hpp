@@ -80,14 +80,16 @@ private:
     double now_halt; // 无人机当前高度，激光雷达数据
     std::shared_ptr<YOLO> yolo;
     double headingangle_compass = 180.0;
-    const double shot_length = 7.0;
-    const double shot_width = 4.0;
+    const double shot_length = 7.0; //x方向，左右方向 
+    const double shot_width = 6.0; //y方向，前后方向 符合直角坐标系
     const double shot_halt = 4.0;
+
     const double see_length = 6.0;
     const double see_width = 5.0;
     const double see_halt = 3.0;
+    
     const int servo_number = 12;
-    const double dx_shot = 0.0, dy_shot = 30.0;
+    const double dx_shot = 0.0, dy_shot = 29;
     const double dx_see = 0.0, dy_see = 54;
     double target_x = 0.0;
     double target_y = 0.0;

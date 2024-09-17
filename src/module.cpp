@@ -115,7 +115,7 @@ void OffboardControl::Doshot()
         else
         {
             RCLCPP_INFO(this->get_logger(), "看见桶了，执行PID");
-            if(this->yolo->get_halt()>target_z+0.6){
+            if(this->yolo->get_halt()>target_z+0.4){
                 PID(this->yolo->get_x1(), this->yolo->get_y1(), this->yolo->get_halt(), target_x, target_y, target_z, accuracy, z_accuracy, k1, kp, ki, kd, dt);
             }
             else{
@@ -211,12 +211,12 @@ void OffboardControl::Doland()
 {
     RCLCPP_INFO(this->get_logger(), "Doland");
     double x_home = 0.0, y_home = 0.0, angle = headingangle_compass;
-    dxyToGlobal(0, 2, headingangle_compass, x_home, y_home, angle);
+    dxyToGlobal(0, 1, headingangle_compass, x_home, y_home, angle);
     RCLCPP_INFO(this->get_logger(), "返回降落准备点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
     send_local_setpoint_command(x_home, y_home, 4, angle);
     rclcpp::sleep_for(std::chrono::seconds(6));
 
-    dxyToGlobal(0, 0.5, headingangle_compass, x_home, y_home, angle);
+    dxyToGlobal(0, 0.3, headingangle_compass, x_home, y_home, angle);
     RCLCPP_INFO(this->get_logger(), "返回降落点 x: %lf   y: %lf    angle: %lf", x_home, y_home, angle);
     send_local_setpoint_command(x_home, y_home, 4, angle);
     rclcpp::sleep_for(std::chrono::seconds(2));
