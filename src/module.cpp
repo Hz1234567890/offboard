@@ -91,7 +91,7 @@ void OffboardControl::Doshot()
     {
         // RCLCPP_INFO(this->get_logger(), "当前高度：%lf",this->yolo->get_halt());
         auto now = std::chrono::system_clock::now();
-        if (now - Doshot_start > std::chrono::seconds(70))
+        if (now - Doshot_start > std::chrono::seconds(60))
         {
             RCLCPP_INFO(this->get_logger(), "超时");
             break;
