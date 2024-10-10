@@ -227,7 +227,7 @@ void OffboardControl::Doland()
     while (!is_land)
     {
         auto now = std::chrono::system_clock::now();
-        if (now - Doland_start > std::chrono::seconds(20) || surround_land > 3)
+        if (now - Doland_start > std::chrono::seconds(19) || surround_land > 3)
         {
             break;
         }
